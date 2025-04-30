@@ -1,3 +1,5 @@
+import { Department } from 'src/department/department.type';
+import { Role } from 'src/role/role.type';
 // 用户详细信息类型定义
 export interface IuserDetail {
   id: number;
@@ -10,14 +12,28 @@ export interface IuserDetail {
   department: Department;
   role: Role;
 }
-export interface Department {
+// 菜单项目类型定义
+export interface typeMenuItem {
   id: number;
   name: string;
+  type: number;
+  url: string;
+  icon: string;
+  children: Children[];
 }
-export interface Role {
+export interface Children {
+  id: number;
+  url: string;
+  name: string;
+  type: number;
+  children: any;
+  parentId: number;
+}
+// 给用户项类型定义
+export interface typeUserItem {
   id: number;
   name: string;
-  intro: string;
+  password: string;
 }
 // 给用户登录时获取token传入信息时作类型定义
 export interface typePayload {
@@ -39,7 +55,7 @@ export interface typeUserInfo {
   name: string;
   realname: string;
   password: string;
-  cellphone: number;
+  cellphone: string;
   departmentId: number;
   roleId: number;
 }

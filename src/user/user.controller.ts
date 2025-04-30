@@ -67,5 +67,7 @@ export class UserController {
   }
   // 新建一个用户
   @Post('/createOneUser')
-  createOneUser(@Body() body: typeUserInfo) {}
+  createOneUser(@Body() body: typeUserInfo) {
+    this.userService.createOneUser(body);
+  }
 }

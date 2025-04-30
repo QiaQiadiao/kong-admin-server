@@ -5,9 +5,11 @@ import {
   typeFindUserPayload,
   typePayload,
   typeUserInfo,
+  typeUserItem,
 } from './user.type';
 import { detailInfo, users, menus } from './user.data.index';
 import { roles } from 'src/role/role.data';
+import { departments } from 'src/department/department.data';
 @Injectable()
 export class UserService {
   constructor(private jwtService: JwtService) {}
@@ -95,5 +97,33 @@ export class UserService {
     if (i !== -1) detailInfo.splice(i, 1);
   }
   // 新建一个用户
-  createOneUser(userInfo: typeUserInfo) {}
+  createOneUser(userInfo: typeUserInfo) {
+    const { name, realname, password, cellphone, departmentId, roleId } =
+      userInfo;
+    const newId = detailInfo.length + 1;
+    const newDepartment = departments.find((item) => item.id === departmentId);
+    if (!newDepartment)
+      throw new Error(`部门 ID 为 ${departmentId} 的信息未找到`);
+    const newRole = roles.find((item) => item.id === roleId);
+    if (!newRole) throw new Error(`角色 ID 为 ${roleId} 的信息未找到`);
+    const newUser: IuserDetail = {
+      id: newId,
+      name,
+      realname,
+      cellphone,
+      enable: 1,
+      createAt: '2024-5-1',
+      updateAt: '2025-5-1',
+      department: newDepartment,
+      role: newRole,
+    };
+    const newUserLoginItem: typeUserItem = {
+      id: newId,
+      name,
+      password,
+    };
+    users.push(newUserLoginItem);
+    detailInfo.push(newUser);
+    console.log(detailInfo);
+  }
 }
