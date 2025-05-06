@@ -56,21 +56,24 @@ export class UserService {
   // 查询用户列表(detailInfo)
   private showDetailInfo: IuserDetail[] = [...detailInfo];
   findUserDetailInfo(payload: typeFindUserPayload) {
-    const { size, offset, name, realname, cellphone, enable, createAt } =
-      payload;
-    console.log(size, offset, name, realname, cellphone, enable, createAt);
-    const rec: IuserDetail[] = []; // 用来保存要展现的用户数据
-    for (const item of detailInfo) {
-      if (name !== undefined && !item.name.includes(name)) continue;
-      if (realname !== undefined && !item.realname.includes(realname)) continue;
-      if (cellphone !== undefined && !item.cellphone.includes(cellphone))
-        continue;
-      if (enable !== undefined && item.enable !== enable) continue;
-      if (createAt !== undefined && item.createAt !== createAt) continue;
-      rec.push(item);
+    const cnd = new Map();
+    for (const key in payload) {
+      if (payload[key] === '') continue;
+      cnd.set(key, payload[key]);
     }
-    this.showDetailInfo.length = 0;
-    this.showDetailInfo = [...rec];
+    if (cnd.size === 0) {
+      this.showDetailInfo = [...detailInfo];
+      return;
+    }
+    console.log(cnd);
+
+    this.showDetailInfo = detailInfo.filter((item) => {
+      for (const [key, value] of cnd) {
+        if (item[key] !== value) return false;
+      }
+      return true;
+    });
+    console.log(this.showDetailInfo);
   }
   // 获取用户详细信息
   postUserDetailInfo(size: number, offset: number) {
@@ -123,7 +126,6 @@ export class UserService {
       password,
     };
     users.push(newUserLoginItem);
-    detailInfo.push(newUser);
-    console.log(detailInfo);
+    detailInfo.unshift(newUser);
   }
 }

@@ -51,14 +51,12 @@ export class UserController {
       throw new Error('请求失败: 请求参数必须包含offset和size');
     }
     const { offset, size } = body;
-    const newData = { offset, size };
-    let count = 0;
-    for (const key in body) {
-      if (body[key] !== '') newData[key] = body[key];
-      count++;
-    }
-    if (count > 2) this.userService.findUserDetailInfo(newData);
     return this.userService.postUserDetailInfo(size, offset);
+  }
+  // 更新当前展现用户列表
+  @Post('/updateUserList')
+  updateUserList(@Body() body: typeFindUserPayload) {
+    this.userService.findUserDetailInfo(body);
   }
   // 删除一个用户
   @Delete('/deleteOneUser/:id')
