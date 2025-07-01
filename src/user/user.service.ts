@@ -48,11 +48,11 @@ export class UserService {
     const ans: Array<object> = [];
     for (const i of role.menus) {
       const res = menus.find((item) => item.id === i);
-      if (!res) throw new Error(`权限 ID 为 ${i} 的信息未找到`);
-      ans.push(res);
+      if (res) ans.push(res);
     }
     return ans;
   }
+
   // 查询用户列表(detailInfo)
   private showDetailInfo: IuserDetail[] = [...detailInfo];
   findUserDetailInfo(payload: typeFindUserPayload) {
@@ -65,16 +65,14 @@ export class UserService {
       this.showDetailInfo = [...detailInfo];
       return;
     }
-    console.log(cnd);
-
     this.showDetailInfo = detailInfo.filter((item) => {
       for (const [key, value] of cnd) {
         if (item[key] !== value) return false;
       }
       return true;
     });
-    console.log(this.showDetailInfo);
   }
+
   // 获取用户详细信息
   postUserDetailInfo(size: number, offset: number) {
     const res: IuserDetail[] = []; // 用来返回此次调用接口该展现的数据
@@ -90,6 +88,7 @@ export class UserService {
       },
     };
   }
+
   // 删除一个用户
   deleteOneUser(id: number) {
     //先在对应显示的数据数组找是否有目标数据
@@ -99,6 +98,7 @@ export class UserService {
     const i = detailInfo.findIndex((item) => item.id === id);
     if (i !== -1) detailInfo.splice(i, 1);
   }
+
   // 新建一个用户
   createOneUser(userInfo: typeUserInfo) {
     const { name, realname, password, cellphone, departmentId, roleId } =
@@ -121,11 +121,39 @@ export class UserService {
       role: newRole,
     };
     const newUserLoginItem: typeUserItem = {
-      id: newId,
+      id: roleId,
       name,
       password,
     };
     users.push(newUserLoginItem);
+    console.log(users);
     detailInfo.unshift(newUser);
+  }
+
+  // 更改一个用户
+  editOneUser(editInfo: IuserDetail) {
+    const idx = detailInfo.findIndex((i) => i.id === editInfo.id);
+    if (idx === -1) throw new Error(`用户 ID 为 ${editInfo.id} 的信息未找到`);
+    for (const key in editInfo) {
+      if (
+        key === 'departmentId' &&
+        detailInfo[idx]['department'].id !== editInfo[key]
+      ) {
+        const temp = departments.find((i) => i.id === editInfo[key]);
+        if (!temp) throw new Error(`部门 ID 为 ${editInfo[key]} 的信息未找到`);
+        detailInfo[idx]['department'] = temp;
+        continue;
+      }
+      if (key === 'roleId' && detailInfo[idx]['role'].id !== editInfo[key]) {
+        const target = roles.find((i) => i.id === editInfo[key]);
+        if (!target)
+          throw new Error(`角色 ID 为 ${editInfo[key]} 的信息未找到`);
+        detailInfo[idx]['role'] = target;
+        continue;
+      }
+      if (editInfo[key] === detailInfo[idx][key] || key === 'password')
+        continue;
+      detailInfo[idx][key] = editInfo[key];
+    }
   }
 }

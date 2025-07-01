@@ -1,4 +1,6 @@
-export const departments = [
+import { Department } from './department.type';
+
+export const departments: Department[] = [
   {
     id: 1,
     name: '董事会',

@@ -3,17 +3,17 @@ import {
   Body,
   Controller,
   Post,
-  Request,
   Get,
   UnauthorizedException,
   ParseIntPipe,
   UseGuards,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Public } from 'src/auth/public.decorator';
 import { AuthGuard } from '../auth/auth.guard';
-import { typeFindUserPayload, typeUserInfo } from './user.type';
+import { IuserDetail, typeFindUserPayload, typeUserInfo } from './user.type';
 @Controller('user')
 @UseGuards(AuthGuard)
 export class UserController {
@@ -39,8 +39,9 @@ export class UserController {
   getUserMenusByRoleId(@Param('id', ParseIntPipe) id: number) {
     return this.userService.getUserMenusByRoleId(id);
   }
+
   // 获取当前用户信息列表
-  @Post('/postUserList')
+  @Post('/list')
   postUserList(@Body() body: typeFindUserPayload) {
     if (
       body.offset === null ||
@@ -54,18 +55,23 @@ export class UserController {
     return this.userService.postUserDetailInfo(size, offset);
   }
   // 更新当前展现用户列表
-  @Post('/updateUserList')
+  @Post('/update')
   updateUserList(@Body() body: typeFindUserPayload) {
     this.userService.findUserDetailInfo(body);
   }
   // 删除一个用户
-  @Delete('/deleteOneUser/:id')
+  @Delete('/delete/:id')
   deleteOneUser(@Param('id', ParseIntPipe) id: number) {
     this.userService.deleteOneUser(id);
   }
   // 新建一个用户
-  @Post('/createOneUser')
+  @Post('/create')
   createOneUser(@Body() body: typeUserInfo) {
     this.userService.createOneUser(body);
+  }
+  // 更改一个用户
+  @Patch('/edit')
+  editOneUser(@Body() editInfo: IuserDetail) {
+    this.userService.editOneUser(editInfo);
   }
 }
